@@ -1,20 +1,47 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { FontAwesome } from '@expo/vector-icons';
+import BookingPage from './pages/Booking';
+import BookedPage from './pages/Booked';
+import login from './pages/login';
+const Tab = createBottomTabNavigator();
 
-export default function App() {
+const App = () => {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Tab.Navigator>
+        <Tab.Screen
+          name="Home"
+          component={BookingPage}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <FontAwesome name="home" color={color} size={size} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Booked"
+          component={BookedPage}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <FontAwesome name="train" color={color} size={size} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="login"
+          component={login}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <FontAwesome name="train" color={color} size={size} />
+            ),
+          }}
+        />
+        
+      </Tab.Navigator>
+    </NavigationContainer>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
