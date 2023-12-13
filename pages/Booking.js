@@ -1,74 +1,66 @@
-// BookingPage.js
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import React from 'react';
+import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import FlashMessage, { showMessage } from 'react-native-flash-message';
 
-const BookingPage = ({ navigation }) => {
-  const [bookedDestinations, setBookedDestinations] = useState([]);
+const DestinationItem = ({ destination, handleBook }) => (
+  <View style={styles.destinationContainer}>
+    <Image style={styles.destinationImage} source={destination.image} />
+    <View style={styles.destinationDetails}>
+      <Text style={styles.destinationName}>{destination.name}</Text>
+      <Text style={styles.destinationPrice}>${destination.price}</Text>
+      <TouchableOpacity
+        style={styles.bookButton}
+        onPress={() => {
+          handleBook(destination);
+          showMessage({
+            message: `${destination.name}  booked successfully!`,
+            type: 'success',
+          });
+        }}
+      >
+        <Text style={styles.buttonText}>Book</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+);
+
+const BookingScreen = ({ navigation, handleBook }) => {
   const destinations = [
-    { name: 'Paris', price: '$500', description: 'City of Love', image: require('../images/California.jpg') },
-    { name: 'Tokyo', price: '$700', description: 'Vibrant and Modern', image: require('../images/logo.png') },
-    { name: 'New York', price: '$600', description: 'The Big Apple', image: require('../images/logo.png') },
-    // Add more destinations as needed
+    { id: 1, name: 'California', price: 100, image: require('../images/California.jpg') },
+    { id: 2, name: 'Chicago', price: 150, image: require('../images/Chicago.jpg') },
+    { id: 3, name: 'SanFrancisco', price: 150, image: require('../images/SanFrancisco.jpg') },
+    { id: 4, name: 'Brooklyn', price: 180, image: require('../images/Brooklyn.jpg') },
+    { id: 5, name: 'Staten island', price: 200, image: require('../images/t5.jpg') },
   ];
 
-  const handleBookNow = (selectedDestination) => {
-    const updatedDestinations = [...bookedDestinations, selectedDestination];
-    setBookedDestinations(updatedDestinations);
-    navigation.navigate('Booked', { bookedDestinations: updatedDestinations }); // Update this line
-  };
-  
-  
-
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Choose Your Destination</Text>
-      
-      {destinations.map((destination, index) => (
-        <TouchableOpacity
-          key={index}
-          style={styles.destinationContainer}
-          onPress={() => handleBookNow(destination)}
-        >
-          <Image
-            style={styles.destinationImage}
-            source={destination.image}
-           
-          />
-          <View style={styles.destinationDetails}>
-            <Text style={styles.destinationName}>{destination.name}</Text>
-            <Text style={styles.destinationPrice}>{destination.price}</Text>
-            <Text style={styles.destinationDescription}>{destination.description}</Text>
-            <TouchableOpacity
-              style={styles.bookButton}
-              onPress={() => handleBookNow(destination)}
-            >
-              <Text style={styles.buttonText}>Book</Text>
-            </TouchableOpacity>
-          </View>
-        </TouchableOpacity>
-      ))}
+    <View style={{ flex: 1 }}>
+      <ScrollView contentContainerStyle={styles.container}>
+        {destinations.map((destination, index) => (
+          <TouchableOpacity
+            key={index}
+            onPress={() => handleBook(destination)}
+            activeOpacity={1} 
+          >
+            <DestinationItem destination={destination} handleBook={handleBook} />
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+      <FlashMessage position="top" />
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#fff', // Set background color
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-    color: '#3498db', // Set text color
+    backgroundColor: '#fff',
   },
   destinationContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
-    backgroundColor: '#ecf0f1', // Set container background color
+    marginBottom: 30,
+    backgroundColor: '#ecf0f1',
     borderRadius: 10,
     padding: 10,
     shadowColor: '#000',
@@ -81,33 +73,26 @@ const styles = StyleSheet.create({
     height: 100,
     marginRight: 10,
     borderRadius: 5,
-    resizeMode: 'cover', // or 'center'
+    resizeMode: 'cover',
   },
-  
-  
-  
   destinationDetails: {
     flex: 1,
   },
   destinationName: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#2c3e50', // Set text color
+    color: '#2c3e50',
   },
   destinationPrice: {
     fontSize: 16,
-    color: '#e74c3c', // Set text color
-  },
-  destinationDescription: {
-    fontSize: 14,
-    marginBottom: 10,
-    color: '#34495e', // Set text color
+    color: '#e74c3c',
   },
   bookButton: {
     backgroundColor: '#3498db',
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
+    marginTop: 10,
   },
   buttonText: {
     color: '#fff',
@@ -116,4 +101,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BookingPage;
+export default BookingScreen;

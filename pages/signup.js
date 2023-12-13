@@ -2,39 +2,43 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-const Login = ({ handleLogin }) => {
+const SignUp = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const navigation = useNavigation();
 
-  const navigation = useNavigation(); 
+  const validatePassword = (password) => {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return passwordRegex.test(password);
+  };
 
-  const handleLoginPress = async () => {
-    if (!email || !password) {
-      setError('Please enter both email and password.');
+  const handleSignUp = () => {
+    if (!email || !password || !confirmPassword) {
+      setError('Please enter email, password, and confirm password.');
+      setSuccess('');
       return;
     }
 
-    try {
-      const credentials = require('./credentials.json');
-      const { users } = credentials;
-
-      const matchedUser = users.find((user) => user.email === email && user.password === password);
-
-      if (matchedUser) {
-        setError('');
-        handleLogin();
-      } else {
-        setError('Invalid email or password.');
-      }
-    } catch (error) {
-      console.error('Error reading JSON file:', error);
+    if (!validatePassword(password)) {
+      setError('Password must be at least 8 characters long and satisfy requirements.');
+      setSuccess('');
+      return;
     }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
+      setSuccess('');
+      return;
+    }
+
+    setSuccess('Sign-up successful');
   };
 
-  const handleSignUpPress = () => {
-
-    navigation.navigate('SignUp');
+  const navigateToLogin = () => {
+    navigation.navigate('Login');
   };
 
   return (
@@ -43,7 +47,7 @@ const Login = ({ handleLogin }) => {
 
       <View style={styles.loginContainer}>
         <Text style={styles.companyName}>Just Travel</Text>
-        <Text style={styles.title}>Log in</Text>
+        <Text style={styles.title}>Sign Up</Text>
         <TextInput
           style={[styles.input, error && styles.errorInput]}
           placeholder="Email"
@@ -57,21 +61,30 @@ const Login = ({ handleLogin }) => {
           value={password}
           onChangeText={(text) => setPassword(text)}
         />
+        <TextInput
+          style={[styles.input, error && styles.errorInput]}
+          placeholder="Confirm Password"
+          
+          value={confirmPassword}
+          onChangeText={(text) => setConfirmPassword(text)}
+        />
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
-        <TouchableOpacity style={styles.button} onPress={handleLoginPress}>
-          <Text style={styles.buttonText}>Sign In</Text>
+        {success ? <Text style={styles.successText}>{success}</Text> : null}
+        <TouchableOpacity style={styles.button} onPress={handleSignUp}>
+          <Text style={styles.buttonText}>Sign Up</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.additionalContainer}>
-        <Text style={styles.additionalText}>Don't have an account?</Text>
-        <TouchableOpacity onPress={handleSignUpPress}>
-          <Text style={styles.signupText}>Sign up here</Text>
+        <Text style={styles.additionalText}>Already have an account?</Text>
+        <TouchableOpacity onPress={navigateToLogin}>
+          <Text style={styles.signupText}>Login here</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -80,7 +93,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   logo: {
-     width: 400,
+    width: 400,
     height: 100,
     marginBottom: 32,
     resizeMode: 'contain',
@@ -123,6 +136,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     textAlign: 'center',
   },
+  successText: {
+    color: 'green',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
   button: {
     backgroundColor: '#fc0050',
     padding: 14,
@@ -152,4 +170,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Login;
+export default SignUp;
